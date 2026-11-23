@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CamiYaku - Gestión Eficiente del Agua (ODS 6)</title>
+    <link rel="icon" type="image/svg+xml" href="iconos/logo.svg">
+    <!-- Tipografías del diseño (Ubuntu para la interfaz, Rubik Distressed para el título de la foto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Rubik+Distressed&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/estilos.css">
+    <script src="js/camiyaku.js" defer></script>
+</head>
+<body>
+    <!-- ENCABEZADO -->
+    <header class="top-bar">
+        <div class="user-profile">
+            <img class="avatar" src="iconos/usuario.svg" alt="" width="40" height="40">
+            <span>Bienvenido, Usuario</span>
+        </div>
+        <div class="brand">
+            <img class="logo" src="iconos/logo.svg" alt="" width="40" height="36">
+            <h1>Cami<span>Yaku</span></h1>
+        </div>
+        <button class="settings-icon" type="button" aria-label="Configuración">
+            <img src="iconos/ajustes.svg" alt="" width="18" height="18">
+        </button>
+    </header>
+
+    <!-- PESTAÑAS: la pestaña de la vista actual se convierte en "Inicio" -->
+    <nav class="main-tabs" id="main-tabs" aria-label="Secciones de CamiYaku">
+        <div class="tabs-row">
+            <button class="tab-btn" data-tab="tab-consumo" data-label="Consumo del agua">Consumo del agua</button>
+            <button class="tab-btn" data-tab="tab-alertas" data-label="Gestión de alertas">Gestión de alertas</button>
+            <button class="tab-btn" data-tab="tab-recordatorio" data-label="Recordatorio">Recordatorio</button>
+            <button class="tab-btn" data-tab="tab-recomendaciones" data-label="Recomendaciones">Recomendaciones</button>
+        </div>
+        <button class="tabs-toggle" id="tabs-toggle" type="button" aria-label="Ocultar pestañas" aria-expanded="true">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+    </nav>
+
+    <main class="content-container">
+
+        <!-- Vista 0: INICIO -->
+        <section id="tab-inicio" class="tab-content active">
+            <div class="home-grid">
+                <article class="card photo-card">
+                    <div class="photo-text">
+                        <h2 class="photo-title">Información y consejos sobre el agua y el agua caliente</h2>
+                        <p>El agua está presente en nuestro día a día, pero pocos saben cuánta consumen realmente ni dónde podrían ahorrar. Aquí encontrarás información, inspiración y consejos prácticos para un uso más consciente del agua, el agua caliente y los recursos en general.</p>
+                    </div>
+                    <div class="photo-footer">
+                        <strong>Información sobre el Agua</strong>
+                        <a href="#" class="link-cyan" data-goto="tab-recomendaciones">Descubrir más →</a>
+                    </div>
+                </article>
+
+                <article class="card chart-card">
+                    <h3>Graficas de Consumo</h3>
+                    <div class="chart-rings">
+                        <div class="ring ring-home" style="--p: 67;"><span>67%</span></div>
+                        <div class="ring ring-home" style="--p: 35;"><span>35%</span></div>
+                    </div>
+                    <a href="#" class="link-blue" data-goto="tab-consumo">Mas detalle →</a>
+                </article>
+            </div>
+            <div class="clouds" aria-hidden="true"></div>
+        </section>
+
+        <!-- Vista 1: CONSUMO DEL AGUA + CALCULADORA CON VOZ (HAI) -->
+        <section id="tab-consumo" class="tab-content">
+            <div class="metrics-bar">
+                <div class="metric">
+                    <span class="label">CONSUMO DE HOY</span>
+                    <h2 id="metric-consumo-hoy">142 Litros</h2>
+                </div>
+                <div class="metric metric-center">
+                    <span class="label">LECTURA DEL MEDIDOR</span>
+                    <h2>1,248.3 m³</h2>
+                </div>
+                <div class="metric metric-right">
+                    <span class="label">ESTADO DEL SERVICIO</span>
+                    <h2 class="status-ok"><span class="dot"></span>Normal</h2>
+                </div>
+            </div>
+
+            <!-- NUEVO MÓDULO HAI 1: CALCULADORA DE CONSUMO DIARIO + DICTADO POR VOZ -->
+            <article class="card" aria-labelledby="calc-diaria-titulo">
+                <div class="header-flex" style="margin-bottom: 14px;">
+                    <div>
+                        <h3 id="calc-diaria-titulo">Calculadora de Consumo Hídrico Diario</h3>
+                        <p class="subtitle">Registra tus actividades de hoy manualmente o díctalas con tu voz (Estándar SEDAPAL / OMS)</p>
+                    </div>
+                </div>
+
+                <!-- Disparador de Interfaz Emergente de Voz -->
+                <div class="cy-voice-trigger-box">
+                    <div class="cy-voice-trigger-info">
+                        <strong>¿Prefieres no escribir todos los números?</strong>
+                        <span>Cuéntanos tu día en voz alta y completaremos los datos por ti.</span>
+                    </div>
+                    <button type="button" id="btnAbrirVoz" class="cy-btn-voice" aria-haspopup="dialog" aria-controls="modalVozCamiYaku">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                            <line x1="12" y1="19" x2="12" y2="23"></line>
+                            <line x1="8" y1="23" x2="16" y2="23"></line>
+                        </svg>
+                        Dictar mis hábitos
+                    </button>
+                </div>
+
+                <!-- Formulario Manual Sincronizado con Voz -->
+                <form id="formCalculadoraAgua" class="cy-calc-grid">
+                    <div class="cy-field">
+                        <label for="minutos-ducha">🚿 Ducha (minutos/día) <small>12 L/min</small></label>
+                        <input type="number" id="minutos-ducha" min="0" max="120" value="7">
+                    </div>
+                    <div class="cy-field">
+                        <label for="veces-platos">🍽️ Lavado de platos (veces) <small>15 L/vez</small></label>
+                        <input type="number" id="veces-platos" min="0" max="20" value="2">
+                    </div>
+                    <div class="cy-field">
+                        <label for="veces-inodoro">🚽 Uso de inodoro (descargas) <small>6 L/vez</small></label>
+                        <input type="number" id="veces-inodoro" min="0" max="30" value="4">
+                    </div>
+                    <div class="cy-field">
+                        <label for="cargas-lavadora">👕 Lavadora (cargas) <small>60 L/carga</small></label>
+                        <input type="number" id="cargas-lavadora" min="0" max="10" value="0">
+                    </div>
+                    <div class="cy-field">
+                        <label for="veces-manos">🧼 Manos / dientes (veces) <small>2 L/vez</small></label>
+                        <input type="number" id="veces-manos" min="0" max="30" value="2">
+                    </div>
+                    <div class="cy-calc-result-box">
+                        <span>Total estimado hoy:</span>
+                        <strong id="cyCalcTotalDisplay">142 Litros</strong>
+                        <small id="cyCalcMetaStatus" class="badge badge-green">Dentro de la meta (≤ 150 L)</small>
+                    </div>
+                </form>
+            </article>
+
+            <div class="two-cols">
+                <article class="card">
+                    <h3>Consumo Diario y Semanal</h3>
+                    <p class="subtitle">Metas de ahorro establecidas (Límite diario: 150 L)</p>
+                    <div class="chart-rings">
+                        <div class="ring" id="ring-limite-diario" style="--p: 95;"><span id="ring-limite-texto">95%<small>Límite diario</small></span></div>
+                        <div class="ring" style="--p: 50;"><span>50%<small>Semana actual</small></span></div>
+                    </div>
+                </article>
+
+                <article class="card">
+                    <h3>Consumo Histórico Mensual</h3>
+                    <p class="subtitle">Últimos 6 meses (Litros x1000)</p>
+                    <div class="bar-chart">
+                        <div class="bar-col"><div class="bar" style="height: 75%;"></div><span>Ene</span></div>
+                        <div class="bar-col"><div class="bar" style="height: 58%;"></div><span>Feb</span></div>
+                        <div class="bar-col"><div class="bar" style="height: 88%;"></div><span>Mar</span></div>
+                        <div class="bar-col"><div class="bar" style="height: 68%;"></div><span>Abr</span></div>
+                        <div class="bar-col"><div class="bar" style="height: 53%;"></div><span>May</span></div>
+                        <div class="bar-col"><div class="bar active-bar" style="height: 82%;"></div><span>Jun</span></div>
+                    </div>
+                </article>
+            </div>
+
+            <article class="card">
+                <h3>Historial de Consumo Reciente</h3>
+                <div class="table-wrap">
+                    <table class="history">
+                        <thead>
+                            <tr><th>Fecha</th><th>Consumo (L)</th><th>Costo Est.</th><th>Estado de Meta</th></tr>
+                        </thead>
+                        <tbody id="tabla-historial-body">
+                            <tr><td>Hoy</td><td id="td-consumo-hoy">142</td><td id="td-costo-hoy">S/ 0.85</td><td id="td-estado-hoy"><span class="badge badge-green">Cumplida</span></td></tr>
+                            <tr><td>29 Jun</td><td>176</td><td>S/ 1.05</td><td><span class="badge badge-orange">Cerca del límite</span></td></tr>
+                            <tr><td>28 Jun</td><td>131</td><td>S/ 0.78</td><td><span class="badge badge-green">Cumplida</span></td></tr>
+                            <tr><td>27 Jun</td><td>205</td><td>S/ 1.23</td><td><span class="badge badge-red">Excedida</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <!-- Vista 2: GESTIÓN DE ALERTAS + DETECTOR MULTIMODAL DE FUGAS (HAI) -->
+        <section id="tab-alertas" class="tab-content">
+            <div class="banner-title header-flex">
+                <div>
+                    <h2>Configuración de Notificaciones y Diagnóstico de Fugas</h2>
+                    <p>Monitorea fugas, evalúa goteos con cámara/texto y recibe avisos de inmediato.</p>
+                </div>
+                <button id="btn-add-alert" class="btn-primary" type="button">+ Añadir nueva alerta</button>
+            </div>
+
+            <!-- NUEVO MÓDULO HAI 2: DETECTOR MULTIMODAL DE FUGAS (IMAGEN + TEXTO) -->
+            <article id="moduloFugasMultimodal" class="card cy-leak-section" aria-labelledby="cyLeakTitle">
+                <header class="cy-leak-header">
+                    <span class="cy-badge-ods">ODS 6 • Diagnóstico Multimodal</span>
+                    <h3 id="cyLeakTitle" style="font-size: 18px; margin-top: 4px;">Detector Inteligente de Fugas y Goteos</h3>
+                    <p>Sube o toma una foto del caño, inodoro o tubería y describe brevemente qué observas para calcular el agua que se está perdiendo.</p>
+                </header>
+
+                <div class="cy-leak-grid">
+                    <!-- PASO 1: ENTRADA MULTIMODAL (IMAGEN + TEXTO) -->
+                    <div class="cy-leak-input-card">
+                        <label class="cy-section-label" for="cyInputFotoFuga">1. Fotografía de la fuga (o captura con cámara):</label>
+                        
+                        <div id="cyDropZone" class="cy-upload-zone" tabindex="0" role="button" aria-label="Subir o tomar fotografía de la fuga">
+                            <input type="file" id="cyInputFotoFuga" accept="image/*" capture="environment" hidden>
+                            <div id="cyUploadPlaceholder" class="cy-upload-placeholder">
+                                <span class="cy-upload-icon" aria-hidden="true">📷</span>
+                                <strong>Toca para tomar foto o subir imagen</strong>
+                                <span>Formatos JPG, PNG o WEBP (se analiza localmente en tu dispositivo)</span>
+                            </div>
+                            <div id="cyPreviewWrapper" class="cy-preview-wrapper" hidden>
+                                <img id="cyImgPreview" alt="Vista previa de la fuga reportada">
+                                <button type="button" id="btnCambiarFoto" class="cy-btn-mini">Cambiar foto</button>
+                            </div>
+                        </div>
+
+                        <!-- Contexto Textual + Chips rápidos -->
+                        <div class="cy-text-context-group">
+                            <label class="cy-section-label" for="cyTextoFuga">2. Describe brevemente la fuga (opcional pero ayuda a precisar):</label>
+                            <div class="cy-quick-chips" role="group" aria-label="Descripciones rápidas">
+                                <button type="button" class="cy-chip" data-texto="Gotea lento cada pocos segundos">💧 Gota lenta</button>
+                                <button type="button" class="cy-chip" data-texto="Goteo rápido y constante">💦 Goteo rápido</button>
+                                <button type="button" class="cy-chip" data-texto="Sale un hilo fino de agua continuo">🚰 Hilo continuo</button>
+                                <button type="button" class="cy-chip" data-texto="Mancha de humedad o fuga fuerte en tubería">⚠️ Fuga / Humedad</button>
+                            </div>
+                            <textarea id="cyTextoFuga" rows="2" placeholder="Ej: El caño de la cocina deja caer un hilo fino de agua todo el día..."></textarea>
+                        </div>
+
+                        <div class="cy-input-actions">
+                            <button type="button" id="btnAnalizarFuga" class="cy-btn-primary cy-btn-full">
+                                🔍 Analizar nivel de desperdicio
+                            </button>
+                            <button type="button" id="btnAbrirSelectorManual" class="cy-btn-link">
+                                No puedo tomar foto ahora — Elegir tipo de goteo visualmente
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PASO 2: RESULTADOS, TRANSPARENCIA, CONFIANZA, CONTROL Y RECUPERACIÓN -->
+                    <div class="cy-leak-output-card">
+                        <!-- RECUPERACIÓN ANTE ERRORES: Selector Visual por Íconos -->
+                        <div id="cyFallbackVisual" class="cy-fallback-box" hidden>
+                            <div id="cyAlertaCalidadFoto" class="cy-warning-banner" role="alert" hidden>
+                                <strong>⚠️ Imagen poco clara o sin fotografía</strong>
+                                <p id="cyMotivoFallback">No pudimos distinguir con certeza el flujo de agua en la foto. Selecciona el ícono que más se parezca a tu fuga:</p>
+                            </div>
+                            <span class="cy-section-label">Selecciona visualmente el tipo de fuga:</span>
+                            <div class="cy-visual-icons-grid" id="cyGridIconosFuga"></div>
+                        </div>
+
+                        <!-- ESTADO INICIAL VACÍO -->
+                        <div id="cyEmptyDiagnosis" class="cy-empty-state">
+                            <span aria-hidden="true">💧</span>
+                            <p>Aquí verás la estimación de litros perdidos por día, el nivel de urgencia y los pasos recomendados para solucionarlo.</p>
+                        </div>
+
+                        <!-- DIAGNÓSTICO MULTIMODAL ACTIVO -->
+                        <div id="cyDiagnosisResult" class="cy-diagnosis-box" hidden aria-live="polite">
+                            <div id="cyUrgencyBanner" class="cy-urgency-banner">
+                                <div>
+                                    <span class="cy-urgency-tag" id="cyNivelTag">NIVEL DETECTADO</span>
+                                    <h3 id="cyCategoriaTitulo">Goteo Moderado</h3>
+                                </div>
+                                <div class="cy-liters-badge">
+                                    <strong id="cyLitrosDia">80 L</strong>
+                                    <span>perdidos / día</span>
+                                </div>
+                            </div>
+
+                            <!-- Principio de Confianza -->
+                            <div class="cy-trust-metrics">
+                                <div class="cy-metric-pill">
+                                    <span>Al mes equivale a:</span>
+                                    <strong id="cyLitrosMes">2,400 Litros</strong>
+                                </div>
+                                <div class="cy-metric-pill">
+                                    <span>Referencia Lima:</span>
+                                    <strong id="cyEquivalenciaLima">12 tanques de agua / mes</strong>
+                                </div>
+                            </div>
+
+                            <!-- Principio de Transparencia -->
+                            <div class="cy-transparency-panel">
+                                <strong>🔎 ¿Por qué asignamos este nivel? (Transparencia):</strong>
+                                <p id="cyExplicacionIA"></p>
+                            </div>
+
+                            <!-- Principio de Control del Usuario -->
+                            <div class="cy-control-panel">
+                                <label class="cy-section-label">¿La clasificación no coincide? Corrígela aquí:</label>
+                                <div class="cy-category-switcher" id="cyCategorySwitcher" role="radiogroup" aria-label="Corregir categoría de fuga"></div>
+                            </div>
+
+                            <!-- Acciones Recomendadas -->
+                            <div class="cy-recommendations-box">
+                                <strong>🛠️ Acciones inmediatas recomendadas:</strong>
+                                <ul id="cyListaAcciones"></ul>
+                            </div>
+
+                            <!-- Guardar en historial local -->
+                            <div class="cy-save-footer">
+                                <button type="button" id="btnGuardarReporteFuga" class="cy-btn-primary cy-btn-full">
+                                    ✅ Confirmar y registrar reporte en CamiYaku
+                                </button>
+                                <p id="cyConfirmacionGuardado" class="cy-saved-msg" hidden>
+                                    Reporte guardado en tu historial local. ¡Gracias por cuidar el agua de Lima!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <div class="alerts-grid">
+                <article class="card">
+                    <h3>Alertas Activas y Sensores</h3>
+                    <div class="alert-switch-item line-red">
+                        <div>
+                            <strong>Fuga de Agua detectada</strong> <span class="badge badge-red">Crítico</span>
+                            <p>Patrón de flujo continuo inusual por más de 2 horas</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" class="toggle-alert" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="alert-switch-item line-orange">
+                        <div>
+                            <strong>Consumo diario alto</strong> <span class="badge badge-orange">Advertencia</span>
+                            <p>Supera el 90% del límite diario configurado</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" class="toggle-alert" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="alert-switch-item line-blue">
+                        <div>
+                            <strong>Corte de servicio programado</strong> <span class="badge badge-blue">Información</span>
+                            <p>Avisos municipales sobre mantenimiento de red</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" class="toggle-alert">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="alert-switch-item line-green">
+                        <div>
+                            <strong>Meta de ahorro mensual lograda</strong> <span class="badge badge-green">Logro</span>
+                            <p>Felicidades, mantienes el consumo por debajo de la meta</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" class="toggle-alert" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </article>
+
+                <div class="side-col">
+                    <article class="card">
+                        <h3>Canales de Envío</h3>
+                        <p class="subtitle">Elige cómo quieres ser notificado</p>
+                        <label class="channel">
+                            <span><strong>Notificaciones Push</strong><small>Inmediato en el celular</small></span>
+                            <input type="checkbox" checked>
+                        </label>
+                        <label class="channel">
+                            <span><strong>Correo Electrónico</strong><small>Resumen diario de eventos</small></span>
+                            <input type="checkbox" checked>
+                        </label>
+                        <label class="channel">
+                            <span><strong>Mensaje SMS (Crítico)</strong><small>Solo para alertas urgentes de fugas</small></span>
+                            <input type="checkbox">
+                        </label>
+                    </article>
+
+                    <aside class="info-box">
+                        <h3>¿Sabías qué?</h3>
+                        <p>El 10% de los hogares tienen fugas que desperdician 300 litros o más al día. Activar la alerta de fuga puede ahorrarte hasta un 40% en tu próximo recibo.</p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista 3: RECORDATORIO -->
+        <section id="tab-recordatorio" class="tab-content">
+            <div class="banner-title header-flex">
+                <div>
+                    <h2>Agenda tus Recordatorios Ecológicos</h2>
+                    <p>Crea rutinas saludables de cuidado del agua y mantenimiento para tu hogar.</p>
+                </div>
+                <button id="btn-add-reminder" class="btn-primary" type="button">+ Añadir recordatorio</button>
+            </div>
+
+            <div class="reminders-grid">
+                <article class="card">
+                    <h3>Lista de Tareas y Recordatorios</h3>
+                    <div class="reminders-list" id="reminders-list">
+                        <div class="reminder-item">
+                            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                            <div class="reminder-text">
+                                <strong>Revisar medidor de agua</strong>
+                                <p>Cada Fin de mes • 09:00 AM</p>
+                                <span class="next">Siguiente ejecución: 30 de Junio</span>
+                            </div>
+                            <span class="status-tag tag-pending">Pendiente</span>
+                        </div>
+                        <div class="reminder-item">
+                            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                            <div class="reminder-text">
+                                <strong>Pagar recibo mensual de agua</strong>
+                                <p>Mensual • Día 15 • 10:00 AM</p>
+                                <span class="next">Siguiente ejecución: 15 de Julio</span>
+                            </div>
+                            <span class="status-tag tag-green">Al día</span>
+                        </div>
+                        <div class="reminder-item">
+                            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                            <div class="reminder-text">
+                                <strong>Limpieza del tanque / cisterna</strong>
+                                <p>Cada 6 meses • 08:00 AM</p>
+                                <span class="next">Siguiente ejecución: 12 de Octubre</span>
+                            </div>
+                            <span class="status-tag tag-orange">Programado</span>
+                        </div>
+                        <div class="reminder-item">
+                            <span class="cal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>
+                            <div class="reminder-text">
+                                <strong>Revisar válvulas del baño</strong>
+                                <p>Cada 3 meses • Sábado</p>
+                                <span class="next">Siguiente ejecución: 15 de Agosto</span>
+                            </div>
+                            <span class="status-tag tag-pending">Pendiente</span>
+                        </div>
+                    </div>
+                </article>
+
+                <div class="side-col">
+                    <article class="card">
+                        <h3>Consejo de Rutina</h3>
+                        <p class="subtitle">Hábitos pequeños, cambios grandes</p>
+                        <h4>Regar plantas por la noche</h4>
+                        <p>Configura un recordatorio para regar tu jardín después de las 7:00 PM. Evita la evaporación rápida del agua provocada por el sol y aprovecha cada gota al máximo.</p>
+                        <a href="#" class="link-blue">Programar este hábito →</a>
+                    </article>
+                    <div class="streak">
+                        <span class="streak-num">15</span>
+                        <div>
+                            <strong>Días consecutivos cumpliendo tareas</strong>
+                            <p>¡Vas por un excelente camino este mes!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista 4: RECOMENDACIONES + COACH ADAPTATIVO SEMANAL (HAI) -->
+        <section id="tab-recomendaciones" class="tab-content">
+            <div class="banner-title">
+                <h2>Consejos de Ahorro e Impacto Ambiental</h2>
+                <p>Metas adaptativas personalizadas y recomendaciones prácticas para tu hogar en Lima.</p>
+            </div>
+
+            <!-- NUEVO MÓDULO HAI 3: RETOS ADAPTATIVOS SEMANALES -->
+            <article id="moduloRetosAdaptativos" class="card cy-adaptive-section" aria-labelledby="cyAdaptiveTitle">
+                <header class="cy-adaptive-header">
+                    <div>
+                        <span class="cy-badge-ods">ODS 6 • Coach Hídrico Adaptativo</span>
+                        <h3 id="cyAdaptiveTitle" style="font-size: 18px; margin-top: 4px;">Tus Retos Semanales Personalizados</h3>
+                        <p>Metas que se ajustan automáticamente a los hábitos y el ritmo real de tu hogar en Lima.</p>
+                    </div>
+
+                    <div class="cy-impact-summary" aria-label="Impacto ambiental acumulado">
+                        <div class="cy-impact-box">
+                            <span class="cy-impact-label">Ahorro acumulado</span>
+                            <strong id="cyAhorroTotalLitros" class="cy-impact-value">0 L</strong>
+                            <span id="cyAhorroEquivalencia" class="cy-impact-sub">0 bidones de 20 L</span>
+                        </div>
+                        <div class="cy-impact-box cy-streak-box">
+                            <span class="cy-impact-label">Racha semanal</span>
+                            <strong id="cyRachaSemanas" class="cy-impact-value">0 sem</strong>
+                            <span id="cyNivelUsuario" class="cy-impact-sub">Nivel: Explorador</span>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Principio de Recuperación ante Errores: Alerta de Recalibración -->
+                <div id="cyAlertaRecalibracion" class="cy-recalibration-banner" role="status" hidden>
+                    <div class="cy-recal-icon" aria-hidden="true">🌱</div>
+                    <div class="cy-recal-content">
+                        <strong>¡No te preocupes! Hemos recalibrado tu meta para hacerla más sencilla</strong>
+                        <p id="cyTextoRecalibracion">Sabemos que cambiar hábitos toma tiempo. Ajustamos este nuevo reto al 50% de dificultad para que avances a tu propio ritmo.</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Principal de Recomendación Adaptativa -->
+                <div class="cy-challenge-card" id="cyCardRetoActual">
+                    <div class="cy-challenge-top">
+                        <span id="cyTagDificultad" class="cy-diff-badge">Dificultad: Moderada</span>
+                        <span id="cyMetaAhorroSemanal" class="cy-reward-badge">+140 L / semana</span>
+                    </div>
+
+                    <h4 id="cyTituloReto" class="cy-challenge-title">Reduce tu ducha en 2 minutos</h4>
+                    <p id="cyDescripcionReto" class="cy-challenge-desc">
+                        Cierra la llave mientras te enjabonas para mantener tus duchas por debajo de los 6 minutos esta semana.
+                    </p>
+
+                    <!-- Principio de Transparencia: "Por qué ves esta recomendación" -->
+                    <div class="cy-why-box">
+                        <div class="cy-why-header">
+                            <span>💡 <strong>¿Por qué ves esta recomendación?</strong></span>
+                        </div>
+                        <p id="cyRazonRecomendacion">
+                            Detectamos que tu consumo reciente fue de 142 L/día y la ducha representa tu mayor gasto hídrico.
+                        </p>
+                    </div>
+
+                    <!-- Estado 1: Propuesta pendiente de decisión (Control del Usuario) -->
+                    <div id="cyAccionesPropuesta" class="cy-challenge-actions">
+                        <button type="button" id="btnAceptarReto" class="cy-btn-primary">
+                            ✅ Aceptar este reto
+                        </button>
+                        <button type="button" id="btnCambiarReto" class="cy-btn-secondary">
+                            🔄 Cambiar por otro reto
+                        </button>
+                        <button type="button" id="btnDescartarReto" class="cy-btn-ghost">
+                            Descartar esta semana
+                        </button>
+                    </div>
+
+                    <!-- Estado 2: Reto en curso (Evaluación y Recuperación ante fallos) -->
+                    <div id="cyAccionesEnCurso" class="cy-active-progress" hidden>
+                        <div class="cy-progress-status">
+                            <span>Estado: <strong>Reto activo en curso</strong></span>
+                            <span id="cyInstruccionCheck">¿Cómo te fue con esta meta esta semana?</span>
+                        </div>
+                        <div class="cy-eval-buttons">
+                            <button type="button" id="btnCumpliReto" class="cy-btn-success">
+                                🎉 ¡Lo logré! Sumar ahorro
+                            </button>
+                            <button type="button" id="btnNoCumpliReto" class="cy-btn-warning">
+                                😅 No pude cumplirlo (recalibrar meta)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estado 3: Reto descartado (Opción de reactivar) -->
+                    <div id="cyEstadoDescartado" class="cy-dismissed-box" hidden>
+                        <p>Has pausado los retos por esta semana. Tu progreso acumulado sigue guardado.</p>
+                        <button type="button" id="btnReactivarRetos" class="cy-btn-secondary">
+                            Volver a activar recomendaciones
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Simulador rápido para pruebas de usabilidad -->
+                <details class="cy-demo-simulator">
+                    <summary>⚙️ Simular consumo previo del usuario (o usa la Calculadora en "Consumo del agua")</summary>
+                    <div class="cy-sim-controls">
+                        <label for="cySimConsumoInput">Consumo diario previo (Litros/día):</label>
+                        <input type="number" id="cySimConsumoInput" value="142" min="20" max="500">
+                        <button type="button" id="btnSimularConsumo" class="cy-btn-secondary">Recalcular perfil IA</button>
+                    </div>
+                </details>
+            </article>
+
+            <div class="recommendations-grid">
+                <article class="card tip-card tip-blue">
+                    <h3><span class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></svg></span>Duchas de 5 minutos</h3>
+                    <p>Reducir el tiempo en la ducha ahorra hasta 40 litros por baño. Intenta usar una canción de 5 minutos como temporizador.</p>
+                    <div class="tip-footer"><span class="pill">Ahorro: ~1,200 L/mes</span><a href="#" class="link-blue">Ver detalle →</a></div>
+                </article>
+                <article class="card tip-card tip-orange">
+                    <h3><span class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></svg></span>Repara Fugas a Tiempo</h3>
+                    <p>Un grifo goteando puede desperdiciar más de 30 litros al día. Revisa constantemente empaques y uniones de tu grifería.</p>
+                    <div class="tip-footer"><span class="pill">Ahorro: ~900 L/mes</span><a href="#" class="link-blue" data-goto="tab-alertas">Ir al detector →</a></div>
+                </article>
+                <article class="card tip-card tip-green">
+                    <h3><span class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></svg></span>Riego Eficiente</h3>
+                    <p>Usa sistemas de goteo o riega tus plantas de noche. Reducirás pérdidas por evaporación y tus plantas aprovecharán mejor el agua.</p>
+                    <div class="tip-footer"><span class="pill">Ahorro: ~600 L/mes</span><a href="#" class="link-blue">Ver detalle →</a></div>
+                </article>
+                <article class="card tip-card tip-cyan">
+                    <h3><span class="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3s-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></svg></span>Cosecha de Lluvia</h3>
+                    <p>Usa baldes o barriles para recolectar agua de lluvia. Es ideal para la limpieza del patio, el riego o el inodoro.</p>
+                    <div class="tip-footer"><span class="pill">Ahorro: ~500 L/mes</span><a href="#" class="link-blue">Ver detalle →</a></div>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <!-- =========================================================
+         INTERFAZ EMERGENTE DE RECONOCIMIENTO DE VOZ (Web Speech API)
+         ========================================================= -->
+    <div id="modalVozCamiYaku" class="cy-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cyModalTitulo" hidden>
+        <div class="cy-modal-card">
+            <header class="cy-modal-header">
+                <div>
+                    <span class="cy-badge-ods">ODS 6 • Asistente Inteligente</span>
+                    <h2 id="cyModalTitulo">Dictado de Consumo Hídrico</h2>
+                </div>
+                <button type="button" id="btnCerrarModalVoz" class="cy-btn-close" aria-label="Cancelar y cerrar ventana">✕</button>
+            </header>
+
+            <!-- Estado de Escucha y Controles de Micrófono -->
+            <section class="cy-mic-stage" aria-live="polite">
+                <div id="cyMicVisual" class="cy-mic-ring">
+                    <button type="button" id="btnToggleMic" class="cy-mic-core" aria-label="Iniciar o detener grabación">
+                        🎙️
+                    </button>
+                </div>
+                <p id="cyEstadoVoz" class="cy-status-text">Presiona el micrófono y describe tus actividades de hoy</p>
+                <p class="cy-hint-text">Ejemplo: <em>"Hoy me duché 8 minutos, lavé platos dos veces y usé el inodoro 4 veces"</em></p>
+            </section>
+
+            <!-- Alerta de Recuperación ante Errores -->
+            <div id="cyAlertaError" class="cy-error-box" role="alert" hidden>
+                <p id="cyMensajeError" class="cy-error-msg"></p>
+                <div class="cy-error-actions">
+                    <button type="button" id="btnReintentarVoz" class="cy-btn-secondary">Reintentar voz</button>
+                    <button type="button" id="btnIrManual" class="cy-btn-primary">Ingresar manualmente</button>
+                </div>
+            </div>
+
+            <!-- Principio de Transparencia: Transcripción en vivo -->
+            <section class="cy-transparency-box">
+                <label for="cyTranscripcionVivo" class="cy-section-label">
+                    1. Lo que el sistema escuchó (en tiempo real):
+                </label>
+                <div id="cyTranscripcionVivo" class="cy-transcript-box" aria-live="polite">
+                    <span class="cy-placeholder">Tu voz aparecerá aquí mientras hablas...</span>
+                </div>
+            </section>
+
+            <!-- Principio de Control + Transparencia + Confianza: Resultados Interpretados -->
+            <section id="cyResultadosBox" class="cy-parsed-box" hidden>
+                <div class="cy-parsed-header">
+                    <span class="cy-section-label">2. Hábitos detectados y conversión a litros (puedes editarlos):</span>
+                </div>
+                <ul id="cyListaDetectados" class="cy-detected-list"></ul>
+                <div class="cy-total-preview">
+                    <span>Consumo estimado detectado:</span>
+                    <strong id="cyTotalLitrosVoz">0 Litros</strong>
+                </div>
+            </section>
+
+            <!-- Principio de Confianza: Base de cálculo transparente -->
+            <details class="cy-trust-details">
+                <summary>ℹ️ ¿Cómo calculamos las equivalencias en litros?</summary>
+                <p>
+                    Utilizamos promedios de consumo doméstico referenciales para hogares de Lima (SEDAPAL / OMS):
+                    <strong>Ducha:</strong> 12 L/minuto • <strong>Lavado de platos (a mano):</strong> 15 L/vez • 
+                    <strong>Inodoro:</strong> 6 L/descarga • <strong>Lavadora:</strong> 60 L/carga • 
+                    <strong>Lavado de manos/dientes:</strong> 2 L/vez.
+                </p>
+            </details>
+
+            <!-- Pie de Modal: Control total del usuario -->
+            <footer class="cy-modal-footer">
+                <button type="button" id="btnCancelarDictado" class="cy-btn-ghost">Cancelar y salir</button>
+                <button type="button" id="btnAplicarDatos" class="cy-btn-primary" disabled>Aplicar a la calculadora</button>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
